@@ -34,12 +34,12 @@ def get_cache_filters(J,L,shape):
     shape = shape[:2]
     filters_cache_basepath = "filters_cache"
     if not os.path.exists(filters_cache_basepath):
-        print "Filters cache dir not found, making one at: {}".format(filters_cache_basepath)
+        print(f"Filters cache dir not found, making one at: {filters_cache_basepath}")
         os.mkdir(filters_cache_basepath)
 
-    filter_path = os.path.join(filters_cache_basepath, "filter_J{}_L{}_shape{}.npz".format(J,L,shape))
+    filter_path = os.path.join(filters_cache_basepath, f"filter_J{J}_L{L}_shape{shape}.npz")
     if not os.path.isfile(filter_path):
-        print "Filter J:{} L:{} shape:{} not found in cache. Building it.".format(J,L,shape)
+        print(f"Filter J:{J} L:{L} shape:{shape} not found in cache. Building it.")
         filters = get_filters(J,L,shape)
         np.savez_compressed(filter_path, filters=filters)
     else:        
@@ -81,13 +81,13 @@ class SameShapeSignalContainer:
         try:
             shape = tuple(shape)
         except TypeError as e:
-            print "Shape must be a tuple or castable to tuple, not a {}".format(type(shape))
+            print(f"Shape must be a tuple or castable to tuple, not a {type(shape)}")
             raise e
 
         self.gpu_data = gpuarray.empty((B,)+shape, dtype=dtype)
-        self.j_hist = [[] for _ in xrange(B)]
-        self.l_hist = [[] for _ in xrange(B)]
-        self.ds_hist = [[] for _ in xrange(B)]
+        self.j_hist = [[] for _ in range(B)]
+        self.l_hist = [[] for _ in range(B)]
+        self.ds_hist = [[] for _ in range(B)]
         self.original_shape = original_shape
         self.B = B
 
@@ -335,7 +335,7 @@ def ifft_gpu(img_f_gpu, img_gpu=None, stream=None):
 
     if img_gpu is None:
         # Allocate memory for the inverse transform
-        print "Allocating outupt gpuarray"
+        print("Allocating outupt gpuarray")
         img_gpu = gpuarray.empty(img_f_gpu.shape, np.complex64)
     
     # Prepare plan
