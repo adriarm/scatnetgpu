@@ -7,7 +7,7 @@ from pycuda import gpuarray
 from pycuda.elementwise import ElementwiseKernel
 import skcuda.fft as cu_fft
 
-from filter_banks import morlet_filter_bank_2d
+from scatnetgpu.filter_banks import morlet_filter_bank_2d
 
 def get_filters(J, L, shape=None, margin=(0,0)):
     assert (shape[0]>=2**J and shape[1]>=2**J), "Shape ({}) must be less then {}".format(shape, 2**J)
@@ -542,8 +542,8 @@ class ScatNet:
             self.prepare_for_shape(shape)
 
     def prepare_for_shape(self, shape):
-        if not self.shape == shape[:2]:
-            self.shape = shape[:2]
+        if not self.shape == shape[1:]:
+            self.shape = shape[1:]
             self.filters = get_cache_filters(self.J, self.L, self.shape)
 
             self.containers = allocate_containers(self.M, self.shape, self.filters)
@@ -551,14 +551,14 @@ class ScatNet:
     def transform(self, img):
         self.prepare_for_shape(img.shape)
 
-        ''' Trasform img with the scatterin network. If shape is 3 it's assumed that last axis are channels and each channel is scattered independetly'''
+        ''' Trasform img with the scatterin network. If shape is 3 it's assumed that the first axis are channels and each channel is scattered independetly'''
         if len(img.shape) == 2:
             S, _ = scattering_newtork(img, self.filters, containers=self.containers, M=self.M)
             return S
         elif len(img.shape) == 3:
             c_outs = []
-            for c in range(img.shape[2]):
-                S = self.transform(img[:,:,c])
+            for c in range(img.shape[0]):
+                S = self.transform(img[c,:,:])
                 c_outs.append(S)
             return c_outs
 
