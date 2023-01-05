@@ -10,7 +10,7 @@ import skcuda.fft as cu_fft
 from scatnetgpu.filter_banks import morlet_filter_bank_2d
 
 def get_filters(J, L, shape=None, margin=(0,0)):
-    assert (shape[0]>=2**J and shape[1]>=2**J), "Shape ({}) must be less then {}".format(shape, 2**J)
+    assert (shape[0]>=2**J and shape[1]>=2**J), f"Shape ({shape}) must not be less then {2**J}"
 
     filters = morlet_filter_bank_2d(shape, J=J, L=L)
 
@@ -31,7 +31,7 @@ def get_filters(J, L, shape=None, margin=(0,0)):
     return kernels
 
 def get_cache_filters(J,L,shape):
-    shape = shape[:2]
+    # shape = shape[:2]
     filters_cache_basepath = "filters_cache"
     if not os.path.exists(filters_cache_basepath):
         print(f"Filters cache dir not found, making one at: {filters_cache_basepath}")
